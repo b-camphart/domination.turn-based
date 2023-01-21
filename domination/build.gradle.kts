@@ -15,6 +15,7 @@ repositories {
 
 dependencies {
     commonTestImplementation("io.kotest:kotest-framework-engine:5.5.4")
+    commonMainImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
 }
 
 kotlin {
