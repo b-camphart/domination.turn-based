@@ -14,13 +14,17 @@ open class DominationBattle(
     fun attack(agent: Agent, attacker: Soldier, victim: Soldier): Job {
         return scope.launch {
 
+            val newSoldiers = battle.soldiers.map {
+                if (it == victim) Soldier(victim.type, true)
+                else it
+            }
+
+            val allVictimsDead = newSoldiers.all { it.type != victim.type || it.isDead }
+
             battle = Battle(
-                winner = agent.culture,
-                isOver = true,
-                soldiers = listOf(
-                    Soldier(attacker.type, false),
-                    Soldier(victim.type, true)
-                )
+                winner = if (allVictimsDead) agent.culture else null,
+                isOver = allVictimsDead,
+                soldiers = newSoldiers
             )
 
         }
