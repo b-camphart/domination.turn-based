@@ -1,7 +1,7 @@
-package domination.battle.agent
+package domination.fixtures.battle.agent
 
 import domination.battle.Agent
-import domination.battle.BattleAssertions
+import domination.fixtures.battle.BattleAssertions
 import io.kotest.matchers.shouldBe
 
 class AgentAssertions(val agent: Agent) {

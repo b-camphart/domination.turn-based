@@ -1,22 +1,21 @@
-package domination.battle.end
+package domination.features.fighting_battles.ending_the_battle
 
 import bdd.*
 import domination.Culture
-import domination.SomethingArrangements
-import domination.battle.Agent
-import domination.battle.Battle
-import domination.battle.BattleAssertions
-import domination.battle.Soldier
-import domination.battle.agent.AgentActions
-import domination.battle.agent.AgentAssertions
-import domination.battle.soldier.SoldierActions
-import domination.battle.soldier.SoldierAssertions
+import domination.fixtures.battle.soldier.SoldiersArrangements
+import domination.battle.*
+import domination.fixtures.battle.agent.AgentActions
+import domination.fixtures.battle.agent.AgentAssertions
+import domination.fixtures.battle.soldier.SoldierActions
+import domination.fixtures.battle.soldier.SoldierAssertions
+import domination.fixtures.battle.BattleAssertions
+import domination.fixtures.game
 import io.kotest.core.spec.style.StringSpec
 
 /**
  * To win the battle, the player must destroy all enemy units in the battle, which then ends the battle.
  */
-class WinTheBattleFeature : StringSpec({
+class WinningTheBattle : StringSpec({
 
     "Scenario: Destroy last enemy" {
         Given { a_battle_has_been_started }
@@ -39,18 +38,18 @@ class WinTheBattleFeature : StringSpec({
         val player: Agent = Agent(Culture())
         val enemy: Agent = Agent(Culture())
 
-        val battle: Battle = Battle()
+        val battle: Battle get() = game.battle
 
-        val swordsman get() = Soldier()
+        val swordsman: Soldier get() = game.battle.soldiers.first { it.type == "swordsman" }
 
-        val archer get() = Soldier()
+        val archer: Soldier get() = game.battle.soldiers.first { it.type == "archer" }
 
-        val Int.swordsman get() = Any()
-        val Int.archer get() = Any()
+        val Int.swordsman get() = List(this) { Soldier("swordsman", false) }
+        val Int.archer get() = List(this) { Soldier("archer", false) }
 
         val GivenScope.a_battle_has_been_started: Unit get() = Unit
 
-        fun GivenScope.there_is(something: Any) = SomethingArrangements(something)
+        fun GivenScope.there_is(soldiers: List<Soldier>) = SoldiersArrangements(soldiers)
 
         fun GivenScope.the(agent: Agent) = Any()
 

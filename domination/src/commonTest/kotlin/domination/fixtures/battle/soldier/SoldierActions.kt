@@ -1,4 +1,4 @@
-package domination.battle.soldier
+package domination.fixtures.battle.soldier
 
 import domination.battle.Soldier
 

@@ -1,7 +1,8 @@
 package domination.battle
 
-class Soldier {
-
-    val isDead: Boolean = false
+class Soldier(
+    val type: String,
+    val isDead: Boolean
+) {
 
 }
