@@ -8,7 +8,11 @@ class AgentActions(agent: Agent) {
 
     inner class Instructions {
 
-        infix fun to_attack(something: Any) {}
+        infix fun to_attack(something: Any) {
+
+
+
+        }
 
     }
 

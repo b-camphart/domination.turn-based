@@ -1,6 +1,7 @@
 package domination.battle.end
 
 import bdd.*
+import domination.Culture
 import domination.SomethingArrangements
 import domination.battle.Agent
 import domination.battle.Battle
@@ -35,8 +36,8 @@ class WinTheBattleFeature : StringSpec({
 
     companion object {
 
-        val player: Agent = Agent()
-        val enemy: Agent = Agent()
+        val player: Agent = Agent(Culture())
+        val enemy: Agent = Agent(Culture())
 
         val battle: Battle = Battle()
 

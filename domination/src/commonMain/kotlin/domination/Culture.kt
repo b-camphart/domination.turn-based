@@ -1,0 +1,4 @@
+package domination
+
+class Culture {
+}

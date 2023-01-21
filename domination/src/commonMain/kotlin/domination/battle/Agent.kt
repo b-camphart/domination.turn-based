@@ -1,4 +1,7 @@
 package domination.battle
 
-class Agent {
-}
+import domination.Culture
+
+class Agent(
+    val culture: Culture
+)
