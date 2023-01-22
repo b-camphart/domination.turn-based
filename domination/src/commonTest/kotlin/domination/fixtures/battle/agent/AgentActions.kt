@@ -14,7 +14,7 @@ class AgentActions(val agent: Agent) {
         suspend infix fun to_attack(victimActions: SoldierActions) {
             val victim = victimActions.soldier
 
-            game.attack(agent = agent, attacker = soldier, victim = victim).join()
+            game.attack(agent = agent, attacker = soldier, victim = victim)
 
         }
 

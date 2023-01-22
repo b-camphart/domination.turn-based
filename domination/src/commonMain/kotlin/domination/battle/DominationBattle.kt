@@ -1,33 +1,43 @@
 package domination.battle
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
-
 open class DominationBattle(
-    private val scope: CoroutineScope
+    open val soldierTypes: Map<String, () -> Soldier>
 ) {
 
     open var battle: Battle = Battle(soldiers = emptyList())
         protected set
 
-    fun attack(agent: Agent, attacker: Soldier, victim: Soldier): Job {
-        return scope.launch {
-
-            val newSoldiers = battle.soldiers.map {
-                if (it == victim) Soldier(victim.type, true)
-                else it
+    suspend fun attack(agent: Agent, attacker: Soldier, victim: Soldier) {
+        val attack = attacker.abilities.first { !it.name.contains("Defense") }
+        val defense = victim.abilities.find { it.name == attack.name + " Defense" }
+        val newSoldiers = battle.soldiers.map {
+            if (it == victim) {
+                Soldier(
+                    it.type,
+                    defense == null || defense.strength < attack.strength,
+                    it.health - if (defense == null) attack.strength else ((attack.strength / 2) - 1),
+                    it.culture,
+                    it.abilities
+                )
+            } else if (it == attacker) {
+                Soldier(
+                    it.type,
+                    it.isDead,
+                    defense?.let { SoldierHealth(it.strength / 2) } ?: it.health,
+                    it.culture,
+                    it.abilities
+                )
             }
-
-            val allVictimsDead = newSoldiers.all { it.type != victim.type || it.isDead }
-
-            battle = Battle(
-                winner = if (allVictimsDead) agent.culture else null,
-                isOver = allVictimsDead,
-                soldiers = newSoldiers
-            )
-
+            else it
         }
+
+        val allVictimsDead = newSoldiers.all { it.type != victim.type || it.isDead }
+
+        battle = Battle(
+            winner = if (allVictimsDead) agent.culture else null,
+            isOver = allVictimsDead,
+            soldiers = newSoldiers
+        )
     }
 
 }
