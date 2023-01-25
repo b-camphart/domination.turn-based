@@ -17,6 +17,7 @@ class KillingAnEnemy : StringSpec({
             .And { it is_allied_with the(player) }
             .And { there_is(one_archer).in_the_battle }
             .And { it is_allied_with the(enemy) }
+            .And { it is_at 6.health }
 
         When { the(player).instructs(the(swordsman)).to_attack(the(archer)) }
 
@@ -27,7 +28,7 @@ class KillingAnEnemy : StringSpec({
         Given { a_battle_has_been_started }
             .And { there_is(one_swordsman).in_the_battle }
             .And { it is_allied_with the(player) }
-            .And { there_is(one_swordsman).in_the_battle }
+        Given { there_is(one_swordsman).in_the_battle }
             .And { it is_allied_with the(enemy) }
 
         When { the(player).instructs(the(player.swordsman)).to_attack(the(enemy.swordsman)) }

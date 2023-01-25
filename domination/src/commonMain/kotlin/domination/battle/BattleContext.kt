@@ -1,9 +1,6 @@
 package domination.battle
 
 interface BattleContext : BattleAccess {
-    /**
-     * Returning `null` within [update] signifies that no update should take place
-     */
-    suspend fun updateBattle(update: (Battle) -> Battle?)
+    suspend fun <T> updateBattle(update: suspend (battle: Battle, updateBattle: (Battle) -> Unit) -> T) : T
 
 }

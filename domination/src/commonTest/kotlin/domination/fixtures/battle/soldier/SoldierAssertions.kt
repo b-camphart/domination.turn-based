@@ -4,7 +4,8 @@ import domination.battle.Soldier
 import domination.battle.SoldierAbility
 import domination.battle.SoldierHealth
 import domination.fixtures.battle.BattleAssertions
-import io.kotest.matchers.booleans.shouldBeFalse
+import domination.fixtures.shouldBeDead
+import domination.fixtures.shouldNotBeDead
 import io.kotest.matchers.booleans.shouldBeTrue
 import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.shouldBe
@@ -23,13 +24,13 @@ interface SoldierAssertions {
 
         override val should_be_dead: SoldierAssertions
             get() {
-                soldier.isDead.shouldBeTrue()
+                soldier.shouldBeDead()
                 return this
             }
 
         override val should_not_be_dead: SoldierAssertions
             get() {
-                soldier.isDead.shouldBeFalse()
+                soldier.shouldNotBeDead()
                 return this
             }
         override fun should_be_in(battleAssertions: BattleAssertions): SoldierAssertions {

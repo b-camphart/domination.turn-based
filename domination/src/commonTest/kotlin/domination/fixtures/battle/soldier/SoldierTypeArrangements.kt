@@ -3,6 +3,7 @@ package domination.fixtures.battle.soldier
 import domination.battle.Soldier
 import domination.battle.SoldierAbility
 import domination.battle.SoldierHealth
+import domination.battle.SoldierId
 import domination.fixtures.battle.BattleArrangements
 import domination.fixtures.game
 
@@ -40,6 +41,6 @@ class SoldierTypeArrangements private constructor(
     }
 
     private fun createSoldier() =
-        Soldier(typeName, false, health, null, abilities)
+        Soldier(SoldierId(), typeName, health, culture = null, abilities = abilities)
 
 }

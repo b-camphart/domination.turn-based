@@ -3,8 +3,7 @@ package domination.features.fighting_battles.soldiers
 import bdd.Given
 import bdd.Then
 import bdd.When
-import domination.battle.Soldier
-import domination.battle.SoldierHealth
+import domination.entities.soldier.defaultSoldier
 import domination.fixtures.*
 import io.kotest.core.spec.style.StringSpec
 
@@ -47,17 +46,25 @@ class DefiningASoldier : StringSpec({
 }) {
 
     companion object {
-        fun createSwordsman() = Soldier("swordsman", false, SoldierHealth(10), null, listOf(
-            meleeAttack(of_strength = 10),
-            rangedDefense(of_strength = 4),
-            meleeDefense(of_strength = 10)
-        ))
+        fun createSwordsman() = defaultSoldier(type = "swordsman",
+            health = 12.health,
+            totalHealth = 12.health,
+            abilities = listOf(
+                meleeAttack(of_strength = 10),
+                rangedDefense(of_strength = 4),
+                meleeDefense(of_strength = 10)
+            )
+        )
 
-        fun createArcher() = Soldier("archer", false, SoldierHealth(10), null, listOf(
-            rangedAttack(of_strength = 12),
-            rangedDefense(of_strength = 6),
-            meleeDefense(of_strength = 4)
-        ))
+        fun createArcher() = defaultSoldier(type = "archer",
+            health = 8.health,
+            totalHealth = 8.health,
+            abilities = listOf(
+                rangedAttack(of_strength = 12),
+                rangedDefense(of_strength = 6),
+                meleeDefense(of_strength = 4)
+            )
+        )
     }
 
 }

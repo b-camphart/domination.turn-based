@@ -17,6 +17,7 @@ class WinningTheBattle : StringSpec({
             .And { it is_allied_with the(player) }
             .And { there_is(one_archer).in_the_battle }
             .And { it is_allied_with the(enemy) }
+            .And { it is_at 6.health }
 
         When { the(player).instructs(the(swordsman)).to_attack(the(archer)) }
 
@@ -31,6 +32,7 @@ class WinningTheBattle : StringSpec({
             .And { it is_allied_with the(player) }
             .And { there_are(2.archers).in_the_battle }
             .And { the(archers) are_allied_with the(enemy) }
+            .And { the(archers) are_at 6.health }
 
         When { the(player).instructs(the(swordsman)).to_attack(one_of(the(archers))) }
 

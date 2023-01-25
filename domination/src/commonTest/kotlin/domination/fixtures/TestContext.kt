@@ -47,7 +47,8 @@ val GivenScope.a_battle_has_been_started: Unit get() = Unit
 
 fun GivenScope.a_soldier_with_a(ability: SoldierAbility): SoldierTypeArrangements = SoldierTypeArrangements(ability)
 
-fun GivenScope.a_soldier_called(typeName: String) = SoldierTypeArrangements(typeName)
+fun GivenScope.a_soldier_called_a(typeName: String) = SoldierTypeArrangements(typeName)
+fun GivenScope.a_soldier_called_an(typeName: String) = SoldierTypeArrangements(typeName)
 fun GivenScope.there_is(soldier: Soldier) = SoldierArrangements(soldier)
 
 fun GivenScope.there_are(soldiers: List<Soldier>) = SoldierArrangements.Plural(soldiers)

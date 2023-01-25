@@ -9,11 +9,11 @@ class ConfigurableDominationBattle : DominationBattle(mapOf()) {
     override var soldierTypes: Map<String, () -> Soldier> = super.soldierTypes
 
     fun addSoldiers(soldiers: List<Soldier>) {
-        battle = Battle(battle.winner, battle.isOver, battle.soldiers + soldiers)
+        battle = soldiers.fold(battle) { battle, soldier -> battle.withSoldier(soldier) }
     }
 
     fun replaceSoldier(original: Soldier, replacement: Soldier) {
-        battle = Battle(battle.winner, battle.isOver, battle.soldiers - original + replacement)
+        battle = Battle(battle.soldiers - original + replacement)
     }
 
     fun start_battle() {}
