@@ -1,13 +1,10 @@
 package domination.features.fighting_battles.soldiers
 
-import bdd.Given
-import bdd.Then
-import bdd.When
+import bdd.*
 import domination.entities.soldier.defaultSoldier
 import domination.fixtures.*
-import io.kotest.core.spec.style.StringSpec
 
-class DefiningASoldier : StringSpec({
+class DefiningASoldier : Feature({
 
     "Scenario: Define a swordsman" {
         Given { a_soldier_with_a(meleeAttack(of_strength = 10)) }

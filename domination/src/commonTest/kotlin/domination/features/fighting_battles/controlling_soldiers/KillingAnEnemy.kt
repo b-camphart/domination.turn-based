@@ -1,15 +1,12 @@
 package domination.features.fighting_battles.controlling_soldiers
 
-import bdd.Given
-import bdd.Then
-import bdd.When
+import bdd.*
 import domination.fixtures.*
-import io.kotest.core.spec.style.StringSpec
 
 /**
  * To kill an enemy soldier, the enemy soldier's health must drop to zero.  This happens through attacks.
  */
-class KillingAnEnemy : StringSpec({
+class KillingAnEnemy : Feature({
 
     "Scenario: Attack a weak enemy" {
         Given { a_battle_has_been_started }

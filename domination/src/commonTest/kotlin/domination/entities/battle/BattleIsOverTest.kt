@@ -10,6 +10,8 @@ import io.kotest.core.spec.style.FunSpec
 
 class BattleIsOverTest : FunSpec({
 
+    val playerCulture = Culture()
+
     context("creating a battle") {
 
         test("without any soldiers means the battle is over") {
@@ -23,7 +25,11 @@ class BattleIsOverTest : FunSpec({
         }
 
         test("with soldiers belonging to multiple cultures means the battle is still going") {
-            Battle(soldiers = List(5) { defaultSoldier(culture = Culture()) })
+            Battle(
+                playerCulture = playerCulture,
+                soldiers = List(5) { defaultSoldier(culture = Culture()) } +
+                        defaultSoldier(culture = playerCulture)
+            )
                 .shouldNotBeOver()
         }
 
@@ -42,14 +48,27 @@ class BattleIsOverTest : FunSpec({
                 .shouldBeOver()
         }
 
+        test("with no living soldiers allied with the player means the battle is over") {
+            Battle(
+                playerCulture = playerCulture,
+                soldiers = List(5) { defaultSoldier(culture = Culture()) } +
+                        defaultSoldier(culture = playerCulture, health = 0.health)
+            )
+                .shouldBeOver()
+        }
+
     }
 
     context("adding a soldier") {
         test("adding a living soldier with a new culture to a battle that was already over makes the battle resume") {
-            Battle(soldiers = listOf(defaultSoldier(culture = Culture())))
-                .withSoldier(defaultSoldier(culture = Culture()))
+            Battle(
+                playerCulture = playerCulture,
+                soldiers = listOf(defaultSoldier(culture = Culture()))
+            )
+                .withSoldier(defaultSoldier(culture = playerCulture))
                 .shouldNotBeOver()
         }
+
     }
 
 })

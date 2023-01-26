@@ -16,6 +16,6 @@ class KotestConfig : AbstractProjectConfig() {
 @AutoScan
 object GameReset : BeforeTestListener {
     override suspend fun beforeTest(testCase: TestCase) {
-        game = ConfigurableDominationBattle()
+        game = ConfigurableDominationBattle(playerCulture = player.culture)
     }
 }
