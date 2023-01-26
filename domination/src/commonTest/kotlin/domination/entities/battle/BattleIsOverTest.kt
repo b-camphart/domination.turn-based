@@ -48,10 +48,11 @@ class BattleIsOverTest : FunSpec({
                 .shouldBeOver()
         }
 
-        test("with no living soldiers allied with the player") {
+        test("with no living soldiers allied with the player means the battle is over") {
             Battle(
                 playerCulture = playerCulture,
-                soldiers = List(5) { defaultSoldier(culture = Culture()) }
+                soldiers = List(5) { defaultSoldier(culture = Culture()) } +
+                        defaultSoldier(culture = playerCulture, health = 0.health)
             )
                 .shouldBeOver()
         }

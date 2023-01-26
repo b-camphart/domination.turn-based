@@ -33,7 +33,7 @@ class LosingTheBattle : Feature({
             .And { there_is(one_swordsman).in_the_battle }
             .And { it is_allied_with the(other_enemy) }
 
-        When { the(enemy).instructs(the(swordsman)).to_attack(the(archer)) }
+        When { the(enemy).instructs(the(enemy.swordsman)).to_attack(the(archer)) }
 
         Then { the(archer).should_be_dead }
             .And { the(battle).should_be_over }

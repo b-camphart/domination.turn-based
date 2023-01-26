@@ -26,7 +26,7 @@ class Battle private constructor(
         val firstLivingSoldier = soldiersById.values.find { !it.isDead } ?: return@lazy true
         val firstCulture = firstLivingSoldier.culture
         soldiersById.values.all { it.isDead || it.culture == firstCulture }
-                || soldiersById.none { it.value.culture == playerCulture }
+                || soldiersById.none { !it.value.isDead && it.value.culture == playerCulture }
     }
 
     fun withSoldier(soldier: Soldier): Battle {
