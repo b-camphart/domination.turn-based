@@ -1,3 +1,5 @@
+@file:Suppress("UnusedReceiverParameter")
+
 package domination.fixtures
 
 import bdd.GivenScope
@@ -15,12 +17,12 @@ import domination.fixtures.battle.agent.AgentActions
 import domination.fixtures.battle.agent.AgentAssertions
 import domination.fixtures.battle.soldier.*
 
-var game: ConfigurableDominationBattle = ConfigurableDominationBattle()
-
-
-
 val player: Agent = Agent(Culture())
+
+var game: ConfigurableDominationBattle = ConfigurableDominationBattle(player.culture)
+
 val enemy: Agent = Agent(Culture())
+val other_enemy: Agent = Agent(Culture())
 
 val battle: Battle get() = game.battle
 

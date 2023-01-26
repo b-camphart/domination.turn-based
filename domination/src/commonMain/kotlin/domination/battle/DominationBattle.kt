@@ -1,13 +1,15 @@
 package domination.battle
 
+import domination.Culture
 import domination.usecases.battle.Attack
 import domination.usecases.battle.AttackUseCase
 
 open class DominationBattle(
-    open val soldierTypes: Map<String, () -> Soldier>
+    open val soldierTypes: Map<String, () -> Soldier>,
+    playerCulture: Culture
 ) : BattleContext {
 
-    open var battle: Battle = Battle(soldiers = emptyList())
+    open var battle: Battle = Battle(soldiers = emptyList(), playerCulture = playerCulture)
         protected set
 
     override suspend fun getBattle(): Battle {
