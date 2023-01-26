@@ -1,5 +1,5 @@
 package domination.battle
 
-interface BattleAccess {
+fun interface BattleAccess {
     suspend fun getBattle(): Battle
 }

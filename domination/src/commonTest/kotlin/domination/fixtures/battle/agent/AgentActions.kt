@@ -9,6 +9,8 @@ class AgentActions(val agent: Agent) {
 
     infix fun instructs(soldierActions: SoldierActions) = Instructions(soldierActions.soldier)
 
+    infix fun uses(soldierActions: SoldierActions) = Uses(soldierActions.soldier)
+
     inner class Instructions(val soldier: Soldier) {
 
         suspend infix fun to_attack(victimActions: SoldierActions) {
@@ -19,5 +21,14 @@ class AgentActions(val agent: Agent) {
         }
 
     }
+
+    inner class Uses(val soldier: Soldier) {
+
+        suspend infix fun to_estimate_an_attack_against(victimActions: SoldierActions) {
+            game.estimateAttack(victimActions.soldier.id)
+        }
+
+    }
+
 
 }
