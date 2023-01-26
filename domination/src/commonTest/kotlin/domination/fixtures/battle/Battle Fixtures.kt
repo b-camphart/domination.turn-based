@@ -18,3 +18,5 @@ fun Battle.shouldBeOver(): Battle {
     isOver.shouldBeTrue()
     return this
 }
+
+val battle: Battle get() = game.battle
