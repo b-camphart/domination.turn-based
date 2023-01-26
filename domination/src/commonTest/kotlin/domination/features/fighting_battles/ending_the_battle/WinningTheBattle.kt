@@ -1,15 +1,12 @@
 package domination.features.fighting_battles.ending_the_battle
 
-import bdd.Given
-import bdd.Then
-import bdd.When
+import bdd.*
 import domination.fixtures.*
-import io.kotest.core.spec.style.StringSpec
 
 /**
  * To win the battle, the player must destroy all enemy units in the battle, which then ends the battle.
  */
-class WinningTheBattle : StringSpec({
+class WinningTheBattle : Feature({
 
     "Scenario: Destroy last enemy" {
         Given { a_battle_has_been_started }

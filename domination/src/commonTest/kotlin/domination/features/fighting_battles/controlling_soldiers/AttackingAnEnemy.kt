@@ -4,7 +4,6 @@ import bdd.*
 import domination.battle.SoldierHealth
 import domination.fixtures.*
 import domination.fixtures.battle.soldier.SoldierArrangements
-import io.kotest.core.spec.style.FreeSpec
 
 /**
  * Attacking an enemy involves the soldier using either their primary attack, or one of their secondary attacks
@@ -13,7 +12,7 @@ import io.kotest.core.spec.style.FreeSpec
  * attacking soldier is.  The attacking soldier's health will drop based on how well the enemy soldier defends
  * against the attack.  The health of each soldier impacts their relative attack or defense strengths.
  */
-class AttackingAnEnemy : FreeSpec({
+class AttackingAnEnemy : Feature({
 
     "Rule: attacks deal damage to the victim" - {
 
