@@ -24,7 +24,7 @@ open class DominationBattle(
 
     suspend fun attack(agent: Agent, attacker: Soldier, victim: Soldier) {
         val failures = mutableListOf<Throwable>()
-        AttackUseCase(this).attack(
+        AttackUseCase(this, SimulateAttack()).attack(
             Attack.Request(
                 agent,
                 attacker.id,
@@ -45,10 +45,19 @@ open class DominationBattle(
         }
     }
 
-    protected open val estimateAttack: EstimateAttack = EstimateAttackUseCase(this)
+    protected open val estimateAttack: Attack.Estimate = EstimateAttackUseCase(this, SimulateAttack())
 
-    suspend fun estimateAttack(victimId: SoldierId) {
-        attackEstimate = estimateAttack.createAttackEstimate(victimId)
+    suspend fun estimateAttack(request: Attack.Request) {
+        val lazyFailure = lazy { Error("Failed to estimate attack.") }
+        estimateAttack.estimateAttack(request, object : Attack.Estimate.Output {
+            override suspend fun presentEstimate(estimate: AttackEstimate) {
+                attackEstimate = estimate
+            }
+            override suspend fun validationFailed(failure: Throwable) {
+                lazyFailure.value.addSuppressed(failure)
+            }
+        })
+        if (lazyFailure.isInitialized()) throw lazyFailure.value
     }
 
 }

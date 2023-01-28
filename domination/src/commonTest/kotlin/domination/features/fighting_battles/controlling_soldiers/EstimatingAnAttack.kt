@@ -1,6 +1,7 @@
 package domination.features.fighting_battles.controlling_soldiers
 
 import bdd.*
+import domination.features.fighting_battles.controlling_soldiers.AttackingAnEnemy.Companion.a_defending_enemy_soldier
 import domination.features.fighting_battles.controlling_soldiers.AttackingAnEnemy.Companion.a_susceptible_enemy
 import domination.features.fighting_battles.controlling_soldiers.AttackingAnEnemy.Companion.an_attacker
 import domination.fixtures.*
@@ -31,6 +32,15 @@ class EstimatingAnAttack : Feature({
             When { the(player).uses(the("Attacking".soldier)).to_estimate_an_attack_against(the("Susceptible".soldier)) }
 
             Then { the(estimate).should_show(the("Susceptible".soldier), at = 1.health) }
+        }
+
+        "Scenario: estimating the potential damage to an enemy with a defense" {
+            Given { an_attacker() }
+                .And { a_defending_enemy_soldier(with = 10.health) }
+
+            When { the(player).uses(the("Attacking".soldier)).to_estimate_an_attack_against(the("Defending".soldier)) }
+
+            Then { the(estimate).should_show(the("Defending".soldier), at = 6.health) }
         }
 
     }

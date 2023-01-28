@@ -4,6 +4,7 @@ import domination.battle.Agent
 import domination.battle.Soldier
 import domination.fixtures.battle.soldier.SoldierActions
 import domination.fixtures.game
+import domination.usecases.battle.Attack
 
 class AgentActions(val agent: Agent) {
 
@@ -25,7 +26,7 @@ class AgentActions(val agent: Agent) {
     inner class Uses(val soldier: Soldier) {
 
         suspend infix fun to_estimate_an_attack_against(victimActions: SoldierActions) {
-            game.estimateAttack(victimActions.soldier.id)
+            game.estimateAttack(Attack.Request(agent, soldier.id, victimActions.soldier.id))
         }
 
     }

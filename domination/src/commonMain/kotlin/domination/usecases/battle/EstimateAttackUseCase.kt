@@ -1,14 +1,16 @@
 package domination.usecases.battle
 
 import domination.battle.BattleAccess
-import domination.battle.SoldierId
 
 class EstimateAttackUseCase(
-    private val access: BattleAccess
-) : EstimateAttack {
-    override suspend fun createAttackEstimate(victimId: SoldierId): AttackEstimate? {
-        val battle = access.getBattle()
-        val victim = battle.getSoldier(victimId) ?: return null
-        return AttackEstimate(victim.withHealth(victim.health.value / 10))
+    private val access: BattleAccess,
+    private val simulation: Attack.Simulation
+) : Attack.Estimate {
+
+    override suspend fun estimateAttack(request: Attack.Request, output: Attack.Estimate.Output) {
+        val battle = with(simulation) {
+            access.getBattle().simulateAttack(request, output)
+        } ?: return
+        output.presentEstimate(AttackEstimate(battle.getSoldier(request.victimId)))
     }
 }

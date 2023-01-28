@@ -1,9 +1,6 @@
 package domination.usecases.battle
 
-import domination.battle.Agent
-import domination.battle.Soldier
-import domination.battle.SoldierAbility
-import domination.battle.SoldierId
+import domination.battle.*
 
 interface Attack {
 
@@ -20,9 +17,24 @@ interface Attack {
         val attacker: Soldier
     )
 
-    interface Output {
-        suspend fun validationFailed(failure: Throwable)
+    interface Output : UseCaseOutput {
         suspend fun success(result: Result)
+    }
+
+    interface Simulation {
+
+        suspend fun Battle.simulateAttack(request: Request, errorCollector: UseCaseOutput): Battle?
+
+    }
+
+    interface Estimate {
+
+        suspend fun estimateAttack(request: Request, output: Output)
+
+        interface Output : UseCaseOutput {
+            suspend fun presentEstimate(estimate: AttackEstimate)
+        }
+
     }
 
     companion object {

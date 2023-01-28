@@ -1,47 +1,77 @@
 package domination.usecases.battle.attack
 
+import domination.Culture
+import domination.battle.Agent
+import domination.battle.Battle
 import domination.battle.Soldier
 import domination.battle.SoldierId
-import domination.entities.soldier.defaultSoldier
-import domination.fixtures.meleeAttack
-import domination.usecases.battle.EstimateAttack
+import domination.usecases.battle.Attack
+import domination.usecases.battle.AttackEstimate
 import domination.usecases.battle.EstimateAttackUseCase
 import domination.usecases.battle.FakeBattleContext
 import io.kotest.core.spec.style.FunSpec
-import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.types.shouldBeSameInstanceAs
 
 class EstimateAttackTest : FunSpec() {
 
     init {
-        context("victim must be in the game") {
-            test("estimate fails without the victim in the game") {
-                estimateAttack.createAttackEstimate(SoldierId())
-                    .shouldBeNull()
+        context("attack simulation fails") {
+            val simulation = FailingAttackSimulationDummy(FakeSimulationError())
+
+            test("simulation errors are collected in output") {
+                EstimateAttackUseCase(battleContext, simulation = simulation)
+                    .estimateAttack(Attack.Request(Agent(Culture()), SoldierId(), SoldierId()), output = outputSpy)
+
+                outputSpy.validationErrors.find { it is FakeSimulationError }
+                    .shouldNotBeNull()
+            }
+
+            test("battle is not updated") {
+                val battleBefore = battleContext.getBattle()
+                EstimateAttackUseCase(battleContext, simulation = simulation)
+                    .estimateAttack(Attack.Request(Agent(Culture()), SoldierId(), SoldierId()), output = outputSpy)
+
+                battleContext.getBattle().shouldBeSameInstanceAs(battleBefore)
             }
         }
-        test("victim receives damage") {
-            givenSomeSoldier()
-                .withAttack(meleeAttack(of_strength = 10))
 
-            val victim = givenSomeSoldier()
-                .withHealth(10)
+        context("attack simulation succeeds") {
+            val newVictimInBattle = Soldier()
+            val simulation = SucceedingAttackSimulationDummy(Battle(soldiers = listOf(newVictimInBattle)))
 
-            estimateAttack.createAttackEstimate(victim.id)
-                .shouldNotBeNull()
-                .estimatedHealthOf(victim.id).shouldBe(1)
+            test("battle is not updated") {
+                val battleBefore = battleContext.getBattle()
+                EstimateAttackUseCase(battleContext, simulation = simulation)
+                    .estimateAttack(Attack.Request(Agent(Culture()), SoldierId(), SoldierId()), output = outputSpy)
+
+                battleContext.getBattle().shouldBeSameInstanceAs(battleBefore)
+            }
+
+            test("outputs new state of victim") {
+                EstimateAttackUseCase(battleContext, simulation = simulation)
+                    .estimateAttack(Attack.Request(Agent(Culture()), SoldierId(), newVictimInBattle.id), output = outputSpy)
+
+                outputSpy.result!!.estimatedHealthOf(newVictimInBattle.id).shouldBe(newVictimInBattle.health.value)
+            }
         }
     }
 
-    private val context = FakeBattleContext()
+    private val battleContext = FakeBattleContext()
+    private val outputSpy = OutputSpy()
 
-    private val estimateAttack: EstimateAttack by lazy { EstimateAttackUseCase(context) }
+    private class OutputSpy : Attack.Estimate.Output {
+        val validationErrors = mutableListOf<Throwable>()
+        var result: AttackEstimate? = null
+            private set
+        override suspend fun validationFailed(failure: Throwable) {
+            validationErrors.add(failure)
+        }
 
-    private fun givenSomeSoldier(): Soldier {
-        val soldier = defaultSoldier()
-        context.soldiers.add(soldier)
-        return soldier
+        override suspend fun presentEstimate(estimate: AttackEstimate) {
+            result = estimate
+        }
     }
 
 }
