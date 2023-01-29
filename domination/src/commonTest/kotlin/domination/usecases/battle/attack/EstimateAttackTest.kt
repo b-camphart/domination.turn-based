@@ -3,8 +3,8 @@ package domination.usecases.battle.attack
 import domination.Culture
 import domination.battle.Agent
 import domination.battle.Battle
-import domination.battle.Soldier
 import domination.battle.SoldierId
+import domination.entities.soldier.nonDefaultSoldier
 import domination.usecases.battle.Attack
 import domination.usecases.battle.AttackEstimate
 import domination.usecases.battle.EstimateAttackUseCase
@@ -38,22 +38,32 @@ class EstimateAttackTest : FunSpec() {
         }
 
         context("attack simulation succeeds") {
-            val newVictimInBattle = Soldier()
-            val simulation = SucceedingAttackSimulationDummy(Battle(soldiers = listOf(newVictimInBattle)))
+            val newVictimInBattle = nonDefaultSoldier()
+            val newAttackerInBattle = nonDefaultSoldier()
+            val victimId = newVictimInBattle.id
+            val attackerId = newAttackerInBattle.id
+            val simulation = SucceedingAttackSimulationDummy(Battle(soldiers = listOf(newVictimInBattle, newAttackerInBattle)))
 
             test("battle is not updated") {
                 val battleBefore = battleContext.getBattle()
                 EstimateAttackUseCase(battleContext, simulation = simulation)
-                    .estimateAttack(Attack.Request(Agent(Culture()), SoldierId(), SoldierId()), output = outputSpy)
+                    .estimateAttack(Attack.Request(Agent(Culture()), attackerId, victimId), output = outputSpy)
 
                 battleContext.getBattle().shouldBeSameInstanceAs(battleBefore)
             }
 
             test("outputs new state of victim") {
                 EstimateAttackUseCase(battleContext, simulation = simulation)
-                    .estimateAttack(Attack.Request(Agent(Culture()), SoldierId(), newVictimInBattle.id), output = outputSpy)
+                    .estimateAttack(Attack.Request(Agent(Culture()), attackerId, victimId), output = outputSpy)
 
                 outputSpy.result!!.estimatedHealthOf(newVictimInBattle.id).shouldBe(newVictimInBattle.health.value)
+            }
+
+            test("outputs new state of attacker") {
+                EstimateAttackUseCase(battleContext, simulation = simulation)
+                    .estimateAttack(Attack.Request(Agent(Culture()), attackerId, victimId), output = outputSpy)
+
+                outputSpy.result!!.estimatedHealthOf(newAttackerInBattle.id).shouldBe(newAttackerInBattle.health.value)
             }
         }
     }

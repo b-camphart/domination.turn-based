@@ -2,6 +2,7 @@ package domination
 
 import domination.battle.Agent
 import domination.battle.DominationBattle
+import domination.battle.Soldier
 import domination.battle.SoldierId
 import domination.usecases.battle.Attack
 import domination.usecases.battle.AttackEstimate
@@ -64,7 +65,7 @@ class DominationBattleTest : FunSpec({
 
     private class SuccessfullyEstimateAttackStub : Attack.Estimate {
         override suspend fun estimateAttack(request: Attack.Request, output: Attack.Estimate.Output) {
-            output.presentEstimate(AttackEstimate())
+            output.presentEstimate(AttackEstimate(Soldier(request.victimId), Soldier(request.attackerId)))
         }
     }
 

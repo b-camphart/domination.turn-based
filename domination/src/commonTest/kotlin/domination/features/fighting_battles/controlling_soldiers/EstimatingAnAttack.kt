@@ -65,4 +65,17 @@ class EstimatingAnAttack : Feature({
 
     }
 
+    "Rule: estimate shows potential damage to attacker" - {
+
+        "Scenario: estimating an attack against an enemy with a defense" {
+            Given { an_attacker(with = 10.health) }
+                .And { a_defending_enemy_soldier() }
+
+            When { the(player).uses(the("Attacking".soldier)).to_estimate_an_attack_against(the("Defending".soldier)) }
+
+            Then { the(estimate).should_show(the("Attacking".soldier), at = 5.health) }
+        }
+
+    }
+
 })

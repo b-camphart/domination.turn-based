@@ -11,6 +11,10 @@ class EstimateAttackUseCase(
         val battle = with(simulation) {
             access.getBattle().simulateAttack(request, output)
         } ?: return
-        output.presentEstimate(AttackEstimate(battle.getSoldier(request.victimId)))
+        val estimate = AttackEstimate(
+            battle.getSoldier(request.victimId)!!,
+            battle.getSoldier(request.attackerId)!!
+        )
+        output.presentEstimate(estimate)
     }
 }
