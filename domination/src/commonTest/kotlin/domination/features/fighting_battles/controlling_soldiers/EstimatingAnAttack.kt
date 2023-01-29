@@ -43,6 +43,26 @@ class EstimatingAnAttack : Feature({
             Then { the(estimate).should_show(the("Defending".soldier), at = 6.health) }
         }
 
+        "Scenario: estimating an attack with a damaged soldier" {
+            Given { an_attacker() }
+                .And { it is_at (1 / 2f).health }
+            Given { a_susceptible_enemy(with = 10.health) }
+
+            When { the(player).uses(the("Attacking".soldier)).to_estimate_an_attack_against(the("Susceptible".soldier)) }
+
+            Then { the(estimate).should_show(the("Susceptible".soldier), at = 6.health) }
+        }
+
+        "Scenario: estimating an attack against a damaged enemy" {
+            Given { an_attacker() }
+            Given { a_defending_enemy_soldier(with = 20.health) }
+                .And { it is_at 10.health }
+
+            When { the(player).uses(the("Attacking".soldier)).to_estimate_an_attack_against(the("Defending".soldier)) }
+
+            Then { the(estimate).should_show(the("Defending".soldier), at = 4.health) }
+        }
+
     }
 
 })
