@@ -12,6 +12,7 @@ class Battle private constructor(
         playerCulture: Culture = Culture()
     ) : this(soldiers.associateBy { it.id }, playerCulture)
 
+    @Deprecated("to find soldier, se getSoldier(SoldierId)")
     val soldiers by lazy { soldiersById.values.toList() }
 
     val winner: Culture? by lazy {
@@ -31,5 +32,10 @@ class Battle private constructor(
 
     fun withSoldier(soldier: Soldier): Battle {
         return Battle(soldiersById = soldiersById + (soldier.id to soldier), playerCulture)
+    }
+
+    fun getSoldier(soldierId: SoldierId): Soldier? {
+        if (soldierId !in soldiersById) return null
+        return soldiersById[soldierId]
     }
 }

@@ -1,13 +1,15 @@
 package domination.battle
 
 import domination.Culture
-import domination.usecases.battle.Attack
-import domination.usecases.battle.AttackUseCase
+import domination.usecases.battle.*
 
 open class DominationBattle(
     open val soldierTypes: Map<String, () -> Soldier>,
     playerCulture: Culture
 ) : BattleContext {
+
+    var attackEstimate: AttackEstimate? = null
+        private set
 
     open var battle: Battle = Battle(soldiers = emptyList(), playerCulture = playerCulture)
         protected set
@@ -22,7 +24,7 @@ open class DominationBattle(
 
     suspend fun attack(agent: Agent, attacker: Soldier, victim: Soldier) {
         val failures = mutableListOf<Throwable>()
-        AttackUseCase(this).attack(
+        AttackUseCase(this, SimulateAttack()).attack(
             Attack.Request(
                 agent,
                 attacker.id,
@@ -41,40 +43,21 @@ open class DominationBattle(
             failures.forEach { it.printStackTrace() }
             error("could not attack")
         }
-//        val attack = attacker.abilities.first { !it.name.contains("Defense") }
-//        val defense = victim.abilities.find { it.name == attack.name + " Defense" }
-//        val newSoldiers = battle.soldiers.map {
-//            if (it == victim) {
-//                Soldier(
-//                    it.id,
-//                    it.type,
-//                    defense == null || defense.strength < attack.strength,
-//                    it.health - if (defense == null) attack.strength else ((attack.strength / 2) - 1),
-//                    it.totalHealth,
-//                    it.culture,
-//                    it.abilities
-//                )
-//            } else if (it == attacker) {
-//                Soldier(
-//                    it.id,
-//                    it.type,
-//                    it.isDead,
-//                    defense?.let { SoldierHealth(it.strength / 2) } ?: it.health,
-//                    it.totalHealth,
-//                    it.culture,
-//                    it.abilities
-//                )
-//            }
-//            else it
-//        }
-//
-//        val allVictimsDead = newSoldiers.all { it.type != victim.type || it.isDead }
-//
-//        battle = Battle(
-//            winner = if (allVictimsDead) agent.culture else null,
-//            isOver = allVictimsDead,
-//            soldiers = newSoldiers
-//        )
+    }
+
+    protected open val estimateAttack: Attack.Estimate = EstimateAttackUseCase(this, SimulateAttack())
+
+    suspend fun estimateAttack(request: Attack.Request) {
+        val lazyFailure = lazy { Error("Failed to estimate attack.") }
+        estimateAttack.estimateAttack(request, object : Attack.Estimate.Output {
+            override suspend fun presentEstimate(estimate: AttackEstimate) {
+                attackEstimate = estimate
+            }
+            override suspend fun validationFailed(failure: Throwable) {
+                lazyFailure.value.addSuppressed(failure)
+            }
+        })
+        if (lazyFailure.isInitialized()) throw lazyFailure.value
     }
 
 }

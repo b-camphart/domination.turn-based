@@ -30,7 +30,7 @@ fun WhenScope.the(soldiers: List<Soldier>) = SoldierActions.Plural(soldiers)
 fun WhenScope.a_soldier_called_a(typeName: String) =
     SoldierActions(game.soldierTypes.getValue(typeName).invoke())
 
-fun ThenScope.the(soldier: Soldier): SoldierAssertions = SoldierAssertions.Singular(soldier)
+fun ThenScope.the(soldier: Soldier): SoldierAssertions.Singular = SoldierAssertions.Singular(soldier)
 
 fun ThenScope.the(soldiers: List<Soldier>) = SoldierAssertions.Plural(soldiers)
 
