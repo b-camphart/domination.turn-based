@@ -22,6 +22,18 @@ interface SoldierAssertions {
 
     class Singular(val soldier: Soldier) : SoldierAssertions {
 
+        val should_not_be_able_to_attack: Singular
+            get() {
+                TODO("define soldier's ability to attack")
+                return this
+            }
+
+        val should_be_able_to_attack: Singular
+            get() {
+                TODO("define soldier's ability to attack")
+                return this
+            }
+
         override val should_be_dead: SoldierAssertions
             get() {
                 soldier.shouldBeDead()

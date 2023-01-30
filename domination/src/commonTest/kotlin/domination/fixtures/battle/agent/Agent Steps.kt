@@ -11,9 +11,10 @@ import bdd.ThenScope
 import bdd.WhenScope
 import domination.battle.Agent
 import domination.fixtures.battle.agent.AgentActions
+import domination.fixtures.battle.agent.AgentArrangements
 import domination.fixtures.battle.agent.AgentAssertions
 
-fun GivenScope.the(agent: Agent) = agent
+fun GivenScope.the(agent: Agent) = AgentArrangements(agent)
 
 fun WhenScope.the(agent: Agent) = AgentActions(agent)
 

@@ -21,6 +21,8 @@ fun GivenScope.there_is(soldier: Soldier) = SoldierArrangements(soldier)
 
 fun GivenScope.there_are(soldiers: List<Soldier>) = SoldierArrangements.Plural(soldiers)
 
+fun GivenScope.the(soldier: Soldier) = SoldierArrangements(soldier)
+
 fun GivenScope.the(soldiers: List<Soldier>) = SoldierArrangements.Plural(soldiers)
 
 fun WhenScope.the(soldier: Soldier) = SoldierActions(soldier)

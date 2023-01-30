@@ -1,9 +1,9 @@
 package domination.fixtures.battle.soldier
 
-import domination.battle.Agent
 import domination.battle.Soldier
 import domination.battle.SoldierHealth
 import domination.fixtures.PercentageSoldierHealth
+import domination.fixtures.battle.agent.AgentArrangements
 import domination.fixtures.game
 import domination.fixtures.health
 
@@ -15,7 +15,8 @@ class SoldierArrangements(val soldier: Soldier) {
         return this@SoldierArrangements
     }
 
-    infix fun is_allied_with(ally: Agent): SoldierArrangements {
+    infix fun is_allied_with(agentArrangements: AgentArrangements): SoldierArrangements {
+        val ally = agentArrangements.agent
         val newSoldier = Soldier(soldier.id, soldier.type, soldier.health, soldier.totalHealth, ally.culture, soldier.abilities)
         if (game.battle.soldiers.contains(soldier)) {
             game.replaceSoldier(soldier, newSoldier)
