@@ -46,7 +46,8 @@ class AttackTest : FunSpec() {
         }
 
         context("attack simulation succeeds") {
-            val expectedBattle = Battle(soldiers = List(2) { defaultSoldier() })
+            val (attacker, victim) = List(2) { defaultSoldier() }
+            val expectedBattle = Battle(soldiers = listOf(attacker, victim))
             val simulation = SucceedingAttackSimulationDummy(expectedBattle)
 
             test("updates battle") {
@@ -54,7 +55,7 @@ class AttackTest : FunSpec() {
                     battleContext,
                     simulation = simulation
                 )
-                    .attack(Attack.Request(Agent(Culture()), expectedBattle.soldiers[0].id, expectedBattle.soldiers[1].id), output = outputSpy)
+                    .attack(Attack.Request(Agent(Culture()), attacker.id, victim.id), output = outputSpy)
 
                 battleContext.getBattle().shouldBeSameInstanceAs(expectedBattle)
             }
@@ -64,11 +65,11 @@ class AttackTest : FunSpec() {
                     battleContext,
                     simulation = simulation
                 )
-                    .attack(Attack.Request(Agent(Culture()), expectedBattle.soldiers[0].id, expectedBattle.soldiers[1].id), output = outputSpy)
+                    .attack(Attack.Request(Agent(Culture()), attacker.id, victim.id), output = outputSpy)
 
                 outputSpy.result.shouldNotBeNull().should {
-                    it.attacker.id.shouldBe(expectedBattle.soldiers[0].id)
-                    it.victim.id.shouldBe(expectedBattle.soldiers[1].id)
+                    it.attacker.shouldBe(attacker)
+                    it.victim.shouldBe(victim)
                 }
             }
 

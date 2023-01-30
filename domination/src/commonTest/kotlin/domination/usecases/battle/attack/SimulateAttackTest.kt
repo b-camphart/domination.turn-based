@@ -12,6 +12,7 @@ import io.kotest.assertions.fail
 import io.kotest.assertions.withClue
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.inspectors.shouldForAtLeastOne
+import io.kotest.matchers.booleans.shouldBeFalse
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeTypeOf
 
@@ -60,6 +61,14 @@ class SimulateAttackTest : FunSpec() {
                     .shouldFailBecause<SoldierDoesNotHaveAnAttack>()
             }
 
+        }
+
+        test("attacking soldier must still be able to attack during this turn") {
+            val theAttackingSoldier = anAlliedSoldier(withAbility = meleeAttack(10))
+                .and(withoutAbilityToAttack)
+
+            player.attacking(anEnemySoldier(), with = theAttackingSoldier)
+                .shouldFailBecause<SoldierHasExpendedItsAttack>()
         }
 
         context("damage dealt to victim") {
@@ -297,6 +306,14 @@ class SimulateAttackTest : FunSpec() {
 
         }
 
+        test("attacker expends their attack for the turn") {
+            val attacker = anAlliedSoldier()
+                .and(withAbility = meleeAttack(0))
+
+            player.attacking(anEnemySoldier(), with = attacker)
+                .shouldExpendTheAttackersAttack()
+        }
+
     }
 
     private val player: Agent = Agent(Culture())
@@ -340,6 +357,20 @@ class SimulateAttackTest : FunSpec() {
         return soldier
     }
 
+    private fun Soldier.and(canAttack: CanAttack): Soldier {
+        val soldier = when (canAttack) {
+            CanAttack.Yes -> withoutAttackExpended()
+            CanAttack.No -> withAttackExpended()
+        }
+        soldiers -= this
+        soldiers += soldier
+        return soldier
+    }
+
+    private val withoutAbilityToAttack get() = CanAttack.No
+
+    private enum class CanAttack { Yes, No }
+
     private fun aDeadSoldier(alliedWith: Agent? = null): Soldier {
         val soldier = defaultSoldier(health = 0.health, culture = alliedWith?.culture)
         soldiers += soldier
@@ -372,17 +403,24 @@ class SimulateAttackTest : FunSpec() {
         }
     }
 
-    private suspend infix fun OutputSpy.shouldLeaveTheVictimAt(expectedHealth: SoldierHealth) {
+    private infix fun OutputSpy.shouldLeaveTheVictimAt(expectedHealth: SoldierHealth) {
         val result = result ?: fail("No result received.  $validationErrors")
         withClue("victim in result should have expected health") {
             result.getSoldier(victimId)!!.health shouldBe expectedHealth
         }
     }
 
-    private suspend infix fun OutputSpy.shouldLeaveTheAttackerAt(expectedHealth: SoldierHealth) {
+    private infix fun OutputSpy.shouldLeaveTheAttackerAt(expectedHealth: SoldierHealth) {
         val result = result ?: fail("No result received.  $validationErrors")
         withClue("attacker in result should have expected health") {
             result.getSoldier(attackerId)!!.health shouldBe expectedHealth
+        }
+    }
+
+    private fun OutputSpy.shouldExpendTheAttackersAttack() {
+        val result = result ?: fail("No result received.  $validationErrors")
+        withClue("attacker in result should have expended their attack") {
+            result.getSoldier(attackerId)!!.canAttack.shouldBeFalse()
         }
     }
 

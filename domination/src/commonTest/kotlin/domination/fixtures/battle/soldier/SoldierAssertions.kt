@@ -6,6 +6,7 @@ import domination.battle.SoldierHealth
 import domination.fixtures.battle.BattleAssertions
 import domination.fixtures.shouldBeDead
 import domination.fixtures.shouldNotBeDead
+import io.kotest.matchers.booleans.shouldBeFalse
 import io.kotest.matchers.booleans.shouldBeTrue
 import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.shouldBe
@@ -24,13 +25,13 @@ interface SoldierAssertions {
 
         val should_not_be_able_to_attack: Singular
             get() {
-                TODO("define soldier's ability to attack")
+                soldier.canAttack.shouldBeFalse()
                 return this
             }
 
         val should_be_able_to_attack: Singular
             get() {
-                TODO("define soldier's ability to attack")
+                soldier.canAttack.shouldBeTrue()
                 return this
             }
 

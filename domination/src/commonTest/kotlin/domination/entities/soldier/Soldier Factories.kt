@@ -17,13 +17,15 @@ fun defaultSoldier(
     totalHealth: SoldierHealth = DEFAULT_SOLDIER_TOTAL_HEALTH,
     culture: Culture? = null,
     type: String = DEFAULT_SOLDIER_TYPE,
-    abilities: List<SoldierAbility> = emptyList()
+    abilities: List<SoldierAbility> = emptyList(),
+    attackExpended: Boolean = false
 ): Soldier = Soldier(
     health = health,
     totalHealth = totalHealth,
     type = type,
     culture = culture,
-    abilities = abilities
+    abilities = abilities,
+    attackExpended = attackExpended
 )
 
 fun nonDefaultSoldier(
@@ -31,11 +33,13 @@ fun nonDefaultSoldier(
     totalHealth: SoldierHealth = NON_DEFAULT_SOLDIER_TOTAL_HEALTH,
     culture: Culture? = Culture(),
     type: String = NON_DEFAULT_SOLDIER_TYPE,
-    abilities: List<SoldierAbility> = listOf(meleeAttack(15))
+    abilities: List<SoldierAbility> = listOf(meleeAttack(15)),
+    attackExpended: Boolean = true
 ): Soldier = Soldier(
     health = health,
     totalHealth = totalHealth,
     type = type,
     culture = culture,
-    abilities = abilities
+    abilities = abilities,
+    attackExpended = attackExpended
 )

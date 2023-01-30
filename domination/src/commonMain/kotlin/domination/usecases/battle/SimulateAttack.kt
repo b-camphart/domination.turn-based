@@ -18,50 +18,10 @@ class SimulateAttack : Attack.Simulation {
         if (attacker == null || victim == null)
             return null
 
-        val (updatedVictim, updatedAttacker) = getSoldiersAfterAttack(attacker, victim)
+        val (updatedVictim, updatedAttacker) = ValidatedAttack(attacker, victim).getSoldiersAfterAttack()
 
         return withSoldier(updatedVictim).withSoldier(updatedAttacker)
     }
-
-    private fun getSoldiersAfterAttack(
-        attacker: Soldier,
-        victim: Soldier
-    ): Pair<Soldier, Soldier> {
-        val attack = attacker.abilities.first { !it.name.contains("defense", true) }
-        val defense = victim.abilities.find { it.isDefenseAgainst(attack) }
-
-        val damageToVictim = getDamageDealtToVictim(victim, attack, attacker)
-        val damageToAttacker = getDamageDealtToAttacker(defense, victim, attack)
-
-        val updatedVictim = victim.withHealth((victim.health.value - damageToVictim.coerceAtLeast(0.0)).roundToInt())
-        val updatedAttacker = attacker.withHealth((attacker.health.value.toDouble() - damageToAttacker).toInt())
-        return Pair(updatedVictim, updatedAttacker)
-    }
-
-    private fun getDamageDealtToVictim(
-        victim: Soldier,
-        attack: SoldierAbility,
-        attacker: Soldier
-    ): Double {
-        val defenseStrength = victim.defensiveStrengthAgainst(attack)
-        val attackStrength = attacker.attackStrengthOf(attack.name)
-        return baseDamageToVictim(attackStrength, defenseStrength) - victim.defensiveBonus()
-    }
-
-    private fun getDamageDealtToAttacker(
-        defense: SoldierAbility?,
-        victim: Soldier,
-        attack: SoldierAbility
-    ): Double {
-        val defenseStrength = baseDefenseStrength(defense, victim) ?: victim.defensiveBonus().toDouble()
-        return damageToAttacker(defenseStrength, attack.strength.toDouble())
-    }
-
-    private fun baseDefenseStrength(defense: SoldierAbility?, victim: Soldier): Double? {
-        return if (defense == null) null else defense.strength.toDouble() * victim.percentageOfTotalHealth()
-    }
-
-    private fun Soldier.defensiveBonus() = (health.value / 10)
 
     private suspend fun Battle.getValidatedAttacker(request: Attack.Request, errorCollector: UseCaseOutput): Soldier? {
         val attacker = getSoldierById(request.attackerId, errorCollector) ?: return null
@@ -73,7 +33,8 @@ class SimulateAttack : Attack.Simulation {
             listOfNotNull(
                 if (culture != request.agent.culture) SoldierMustBeCommandedByItsOwnCulture(request.agent.culture, culture) else null,
                 if (isDead) DeadSoldiersCannotAttack() else null,
-                if (abilities.none { ! it.name.contains("defense", true) }) SoldierDoesNotHaveAnAttack() else null
+                if (abilities.none { ! it.name.contains("defense", true) }) SoldierDoesNotHaveAnAttack() else null,
+                if (! canAttack) SoldierHasExpendedItsAttack() else null
             )
         }
     }
@@ -107,6 +68,44 @@ class SimulateAttack : Attack.Simulation {
         return validationErrors.isEmpty()
     }
 
+}
+
+private class ValidatedAttack(
+    private val attacker: Soldier,
+    private val victim: Soldier
+) {
+
+    private val attack: SoldierAbility = attacker.abilities.first { !it.name.contains("defense", true) }
+    private val defense: SoldierAbility? = victim.abilities.find { it.isDefenseAgainst(attack) }
+
+    fun getSoldiersAfterAttack(): Pair<Soldier, Soldier> {
+        val updatedVictim = getAffectedVictim()
+        val updatedAttacker = getAffectedAttacker()
+        return Pair(updatedVictim, updatedAttacker)
+    }
+
+    private fun getAffectedVictim(): Soldier {
+        val damageToVictim = getDamageDealtToVictim()
+        return victim.withHealth((victim.health.value - damageToVictim.coerceAtLeast(0.0)).roundToInt())
+    }
+
+    private fun getAffectedAttacker(): Soldier {
+        val damageToAttacker = getDamageDealtToAttacker()
+        return attacker.withHealth((attacker.health.value.toDouble() - damageToAttacker).toInt())
+            .withAttackExpended()
+    }
+
+    private fun getDamageDealtToVictim(): Double {
+        val defenseStrength = victim.defensiveStrengthAgainst(attack)
+        val attackStrength = attacker.attackStrengthOf(attack.name)
+        return baseDamageToVictim(attackStrength, defenseStrength) - victim.defensiveBonus()
+    }
+
+    private fun getDamageDealtToAttacker(): Double {
+        val defenseStrength = baseDefenseStrength(defense, victim) ?: victim.defensiveBonus().toDouble()
+        return damageToAttacker(defenseStrength, attack.strength.toDouble())
+    }
+
     private fun baseDamageToVictim(attackStrength: Double, defenseStrength: Double): Double {
         return calculateDamage(attackStrength, defenseStrength)
     }
@@ -115,9 +114,14 @@ class SimulateAttack : Attack.Simulation {
         return calculateDamage(defenseStrength, attackStrength)
     }
 
+    private fun baseDefenseStrength(defense: SoldierAbility?, victim: Soldier): Double? {
+        return if (defense == null) null else defense.strength.toDouble() * victim.percentageOfTotalHealth()
+    }
+
+    private fun Soldier.defensiveBonus() = (health.value / 10)
+
     private fun calculateDamage(attackStrength: Double, defenseStrength: Double): Double {
         if (attackStrength == 0.0 && defenseStrength == 0.0) return 0.0
         return attackStrength * (attackStrength / (attackStrength + defenseStrength))
     }
-
 }
