@@ -26,7 +26,7 @@ class EndingASoldiersTurn : Feature({
                 .And { a_defending_enemy_soldier() }
                 .And { the(player).has_instructed(the("Attacking".soldier)).to_attack(the("Defending".soldier)) }
 
-            When { the(player).ends_their_turn }
+            When { the(player).ends_their_turn() }
 
             Then { the("Attacking".soldier).should_be_able_to_attack }
         }

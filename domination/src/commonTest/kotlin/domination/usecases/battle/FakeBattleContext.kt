@@ -4,7 +4,9 @@ import domination.battle.Battle
 import domination.battle.BattleContext
 import domination.battle.Soldier
 
-class FakeBattleContext : BattleContext {
+class FakeBattleContext(
+    private val initialBattle: Battle? = null
+) : BattleContext {
 
     val soldiers = mutableListOf<Soldier>()
 
@@ -12,7 +14,7 @@ class FakeBattleContext : BattleContext {
 
     override suspend fun getBattle(): Battle {
         if (!::_battle.isInitialized)
-            _battle = Battle(soldiers)
+            _battle = initialBattle ?: Battle(soldiers)
         return _battle
     }
 

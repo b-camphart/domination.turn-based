@@ -8,8 +8,10 @@ import domination.usecases.battle.Attack
 
 class AgentActions(val agent: Agent) {
 
-    val ends_their_turn: AgentActions
-        get() = TODO("define ending a turn")
+    suspend fun ends_their_turn(): AgentActions {
+        game.endTurn(agent.culture)
+        return this
+    }
 
     infix fun instructs(soldierActions: SoldierActions) = Instructions(soldierActions.soldier)
 

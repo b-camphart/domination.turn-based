@@ -2,10 +2,7 @@
 
 package domination.fixtures
 
-import domination.battle.Agent
-import domination.battle.Soldier
-import domination.battle.SoldierAbility
-import domination.battle.SoldierHealth
+import domination.battle.*
 import domination.features.fighting_battles.soldiers.DefiningASoldier
 import domination.fixtures.battle.soldier.SoldierActions
 import domination.fixtures.battle.soldier.SoldierAssertions
@@ -13,6 +10,7 @@ import io.kotest.assertions.withClue
 import io.kotest.matchers.booleans.shouldBeFalse
 import io.kotest.matchers.booleans.shouldBeTrue
 
+val Collection<Soldier>.ids: Set<SoldierId> get() = mapTo(HashSet(size)) { it.id }
 val Collection<Soldier>.types: Set<String> get() = mapTo(HashSet(size)) { it.type }
 
 val String.soldier get() = battle.soldiers.first { it.type == this }
@@ -35,7 +33,7 @@ val Int.archers get() = List(this) { DefiningASoldier.createArcher() }
 fun one_of(plural: SoldierActions.Plural) = SoldierActions(plural.soldiers.first())
 fun one_of(plural: SoldierAssertions.Plural) = plural.atLeast(1)
 
-fun meleeAttack(of_strength: Number) = SoldierAbility(of_strength.toInt(), "Melee")
+fun meleeAttack(of_strength: Number = 10) = SoldierAbility(of_strength.toInt(), "Melee")
 fun meleeDefense(of_strength: Number) = SoldierAbility(of_strength.toInt(), "Melee Defense")
 fun rangedDefense(of_strength: Number) = SoldierAbility(of_strength.toInt(), "Ranged Defense")
 fun rangedAttack(of_strength: Number) = SoldierAbility(of_strength.toInt(), "Ranged")

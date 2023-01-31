@@ -45,18 +45,32 @@ open class DominationBattle(
         }
     }
 
+    protected open val endTurn: EndTurn = EndTurnUseCase(this)
+
+    suspend fun endTurn(culture: Culture) {
+        gatherValidationFailures("Failed to end turn.") { errorCollector ->
+            endTurn.endTurn(culture, object : EndTurn.Output, UseCaseOutput by errorCollector {
+                override suspend fun turnEnded(result: EndTurn.Result) {}
+            })
+        }
+    }
+
     protected open val estimateAttack: Attack.Estimate = EstimateAttackUseCase(this, SimulateAttack())
 
     suspend fun estimateAttack(request: Attack.Request) {
-        val lazyFailure = lazy { Error("Failed to estimate attack.") }
-        estimateAttack.estimateAttack(request, object : Attack.Estimate.Output {
-            override suspend fun presentEstimate(estimate: AttackEstimate) {
-                attackEstimate = estimate
-            }
-            override suspend fun validationFailed(failure: Throwable) {
-                lazyFailure.value.addSuppressed(failure)
-            }
-        })
+        gatherValidationFailures("Failed to estimate attack.") { errorCollector ->
+            estimateAttack.estimateAttack(request, object : Attack.Estimate.Output, UseCaseOutput by errorCollector {
+                override suspend fun presentEstimate(estimate: AttackEstimate) {
+                    attackEstimate = estimate
+                }
+            })
+        }
+    }
+
+    private suspend fun gatherValidationFailures(message: String, collect: suspend (UseCaseOutput) -> Unit) {
+        val lazyFailure = lazy { Error(message) }
+        val collector = UseCaseOutput { lazyFailure.value.addSuppressed(it) }
+        collect(collector)
         if (lazyFailure.isInitialized()) throw lazyFailure.value
     }
 
